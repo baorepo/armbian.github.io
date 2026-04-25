@@ -22,8 +22,8 @@ minimal-stable-debian-uefi:
     - { BOARD: radxa-dragon-q6a, BRANCH: current, ENABLE_EXTENSIONS: "ufs" }
     - { BOARD: radxa-nio-12l, BRANCH: edge, ENABLE_EXTENSIONS: "ufs" }
 
-# Ubuntu minimal with current kernel - UEFI only (oldstable)
-minimal-oldstable-ubuntu-current-uefi:
+# Ubuntu minimal with current kernel - UEFI only
+minimal-stable-ubuntu-current-uefi:
   enabled: yes
   configs: [ armbian-images ]
   pipeline:
@@ -43,27 +43,8 @@ minimal-oldstable-ubuntu-current-uefi:
     - { BOARD: radxa-dragon-q6a, BRANCH: current, ENABLE_EXTENSIONS: "ufs" }
     - { BOARD: radxa-nio-12l, BRANCH: edge, ENABLE_EXTENSIONS: "ufs" }
 
-# Ubuntu minimal - UEFI only (stable)
-minimal-stable-ubuntu-uefi:
-  enabled: yes
-  configs: [ armbian-images ]
-  pipeline:
-    gha: *armbian-gha
-  build-image: "yes"
-  vars:
-    RELEASE: UBUNTU
-    BUILD_MINIMAL: "yes"
-    BUILD_DESKTOP: "no"
-  items:
-    - { BOARD: uefi-arm64, BRANCH: edge }
-    - { BOARD: uefi-x86, BRANCH: edge }
-    - { BOARD: uefi-arm64, BRANCH: cloud, ENABLE_EXTENSIONS: "image-output-qcow2" }
-    - { BOARD: uefi-x86, BRANCH: cloud, ENABLE_EXTENSIONS: "image-output-qcow2" }
-    - { BOARD: uefi-arm64, BRANCH: cloud, ENABLE_EXTENSIONS: "image-output-vhdx" }
-    - { BOARD: uefi-x86, BRANCH: cloud, ENABLE_EXTENSIONS: "image-output-vhdx" }
-
-# Ubuntu GNOME desktop - UEFI only (oldstable)
-desktop-oldstable-ubuntu-gnome-uefi:
+# Ubuntu GNOME desktop - UEFI only
+desktop-stable-ubuntu-gnome-uefi:
   enabled: yes
   configs: [ armbian-images ]
   pipeline:
@@ -83,26 +64,8 @@ desktop-oldstable-ubuntu-gnome-uefi:
     - { BOARD: radxa-dragon-q6a, BRANCH: current, ENABLE_EXTENSIONS: "ufs" }
     - { BOARD: radxa-nio-12l, BRANCH: edge, ENABLE_EXTENSIONS: "ufs" }
 
-# Ubuntu GNOME desktop - UEFI only (stable)
-desktop-stable-ubuntu-gnome-uefi:
-  enabled: yes
-  configs: [ armbian-images ]
-  pipeline:
-    gha: *armbian-gha
-  build-image: "yes"
-  vars:
-    RELEASE: UBUNTU
-    BUILD_MINIMAL: "no"
-    BUILD_DESKTOP: "yes"
-    DESKTOP_ENVIRONMENT: "gnome"
-    DESKTOP_ENVIRONMENT_CONFIG_NAME: "config_base"
-    DESKTOP_APPGROUPS_SELECTED: "browsers,programming"
-  items:
-    - { BOARD: uefi-arm64, BRANCH: edge, ENABLE_EXTENSIONS: "v4l2loopback-dkms,mesa-vpu" }
-    - { BOARD: uefi-x86, BRANCH: edge, ENABLE_EXTENSIONS: "v4l2loopback-dkms,mesa-vpu,nvidia" }
-
-# Ubuntu Cinnamon desktop - UEFI only (oldstable)
-desktop-oldstable-ubuntu-cinnamon-uefi:
+# Ubuntu Cinnamon desktop - UEFI only
+desktop-stable-ubuntu-cinnamon-uefi:
   enabled: yes
   configs: [ armbian-images ]
   pipeline:
