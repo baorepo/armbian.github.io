@@ -1640,17 +1640,33 @@ def capitalize_board_name(board):
     return board.capitalize()
 
 
-def generate_exposed_map(conf_wip_boards, csc_tvb_boards=None):
+def generate_exposed_map(
+    conf_wip_boards,
+    csc_tvb_boards=None,
+    *,
+    debian_standard,
+    ubuntu_standard,
+    debian_community,
+    ubuntu_community,
+):
     """
     Generate exposed.map with regex patterns for recommended images.
     For each board, generates 2 patterns:
-    1. Minimal: Debian trixie + current branch
-    2. For boards with video: Ubuntu noble + desktop (gnome/xfce)
-       For headless: Ubuntu noble + minimal
-       For riscv64: Ubuntu noble + xfce desktop
+    1. Minimal: Debian + current branch
+    2. For boards with video: Ubuntu + desktop (gnome/xfce)
+       For headless:   Ubuntu + minimal
+       For riscv64:    Ubuntu + xfce desktop
 
     conf_wip_boards: stable boards (conf/wip support level) - images have no 'community_' prefix
-    csc_tvb_boards: community boards (csc/tvb support level) - images have 'community_' prefix
+    csc_tvb_boards:  community boards (csc/tvb support level) - images have 'community_' prefix
+
+    The Debian/Ubuntu codenames baked into each generated regex are picked
+    per board based on its support tier — stable boards use the standard-
+    support codenames, community boards use the community codenames — so
+    the exposed.map patterns track whatever codename the YAML files were
+    last generated with. Without this, `generate_*_yaml` could be promoted
+    to a new release while exposed.map kept matching the old one and
+    "recommended images" would silently drop off the website.
     """
     if csc_tvb_boards is None:
         csc_tvb_boards = []
@@ -1697,49 +1713,57 @@ def generate_exposed_map(conf_wip_boards, csc_tvb_boards=None):
         # Capitalize board name for pattern
         board_pattern = capitalize_board_name(board)
 
-        # 1. Minimal: Debian trixie + current/vendor branch (all boards)
+        # Per-board (debian, ubuntu) codename pair — stable boards
+        # follow the standard-support flags, community boards follow
+        # the community flags. Keeps exposed.map regex patterns in
+        # lockstep with whatever codenames the YAML files were just
+        # generated against.
+        if board_type == 'community':
+            debian_codename = debian_community
+            ubuntu_codename = ubuntu_community
+        else:
+            debian_codename = debian_standard
+            ubuntu_codename = ubuntu_standard
+
+        # 1. Minimal: Debian + current/vendor branch (all boards)
         #    Generate two patterns: one with dir prefix (for dl.armbian.com), one without (for GitHub releases)
-        minimal_pattern = f"{dir_prefix}Armbian_{community_prefix}[0-9].*{board_pattern}_trixie_{branch}_[0-9]*.[0-9]*.[0-9]*_minimal{file_ext}"
-        minimal_pattern_no_prefix = f"Armbian_{community_prefix}[0-9].*{board_pattern}_trixie_{branch}_[0-9]*.[0-9]*.[0-9]*_minimal{file_ext}"
+        minimal_pattern = f"{dir_prefix}Armbian_{community_prefix}[0-9].*{board_pattern}_{debian_codename}_{branch}_[0-9]*.[0-9]*.[0-9]*_minimal{file_ext}"
+        minimal_pattern_no_prefix = f"Armbian_{community_prefix}[0-9].*{board_pattern}_{debian_codename}_{branch}_[0-9]*.[0-9]*.[0-9]*_minimal{file_ext}"
         lines.append(minimal_pattern)
         lines.append(minimal_pattern_no_prefix)
 
         # 2. Second pattern: depends on board type
-        # For loongarch: only bookworm minimal (no noble)
+        # loongarch: only the Debian minimal pattern above (no Ubuntu image)
         if is_fast == 'loongarch':
             single_image_boards.append(board)
             continue
 
-        # For riscv64: noble xfce desktop
+        # For riscv64: Ubuntu xfce desktop
         if is_fast == 'riscv64':
-            riscv64_pattern = f"{dir_prefix}Armbian_{community_prefix}[0-9].*{board_pattern}_noble_{branch}_[0-9]*.[0-9]*.[0-9]*_xfce_desktop{file_ext}"
-            riscv64_pattern_no_prefix = f"Armbian_{community_prefix}[0-9].*{board_pattern}_noble_{branch}_[0-9]*.[0-9]*.[0-9]*_xfce_desktop{file_ext}"
+            riscv64_pattern = f"{dir_prefix}Armbian_{community_prefix}[0-9].*{board_pattern}_{ubuntu_codename}_{branch}_[0-9]*.[0-9]*.[0-9]*_xfce_desktop{file_ext}"
+            riscv64_pattern_no_prefix = f"Armbian_{community_prefix}[0-9].*{board_pattern}_{ubuntu_codename}_{branch}_[0-9]*.[0-9]*.[0-9]*_xfce_desktop{file_ext}"
             lines.append(riscv64_pattern)
             lines.append(riscv64_pattern_no_prefix)
             continue
 
-        # For boards with video: Ubuntu noble + desktop
+        # For boards with video: Ubuntu + desktop
         if board_has_video and is_fast is not None:
             # Determine desktop type based on hardware speed
             if is_fast is True:
                 # Fast boards get GNOME desktop pattern only
                 desktop_type = 'gnome_desktop'
-                desktop_pattern = f"{dir_prefix}Armbian_{community_prefix}[0-9].*{board_pattern}_noble_{branch}_[0-9]*.[0-9]*.[0-9]*_{desktop_type}{file_ext}"
-                desktop_pattern_no_prefix = f"Armbian_{community_prefix}[0-9].*{board_pattern}_noble_{branch}_[0-9]*.[0-9]*.[0-9]*_{desktop_type}{file_ext}"
-                lines.append(desktop_pattern)
-                lines.append(desktop_pattern_no_prefix)
             else:  # is_fast is False (slow hardware)
                 desktop_type = 'xfce_desktop'
-                desktop_pattern = f"{dir_prefix}Armbian_{community_prefix}[0-9].*{board_pattern}_noble_{branch}_[0-9]*.[0-9]*.[0-9]*_{desktop_type}{file_ext}"
-                desktop_pattern_no_prefix = f"Armbian_{community_prefix}[0-9].*{board_pattern}_noble_{branch}_[0-9]*.[0-9]*.[0-9]*_{desktop_type}{file_ext}"
-                lines.append(desktop_pattern)
-                lines.append(desktop_pattern_no_prefix)
+            desktop_pattern = f"{dir_prefix}Armbian_{community_prefix}[0-9].*{board_pattern}_{ubuntu_codename}_{branch}_[0-9]*.[0-9]*.[0-9]*_{desktop_type}{file_ext}"
+            desktop_pattern_no_prefix = f"Armbian_{community_prefix}[0-9].*{board_pattern}_{ubuntu_codename}_{branch}_[0-9]*.[0-9]*.[0-9]*_{desktop_type}{file_ext}"
+            lines.append(desktop_pattern)
+            lines.append(desktop_pattern_no_prefix)
         else:
-            # Headless boards: Ubuntu noble minimal
-            noble_minimal_pattern = f"{dir_prefix}Armbian_{community_prefix}[0-9].*{board_pattern}_noble_{branch}_[0-9]*.[0-9]*.[0-9]*_minimal{file_ext}"
-            noble_minimal_pattern_no_prefix = f"Armbian_{community_prefix}[0-9].*{board_pattern}_noble_{branch}_[0-9]*.[0-9]*.[0-9]*_minimal{file_ext}"
-            lines.append(noble_minimal_pattern)
-            lines.append(noble_minimal_pattern_no_prefix)
+            # Headless boards: Ubuntu minimal
+            ubuntu_minimal_pattern = f"{dir_prefix}Armbian_{community_prefix}[0-9].*{board_pattern}_{ubuntu_codename}_{branch}_[0-9]*.[0-9]*.[0-9]*_minimal{file_ext}"
+            ubuntu_minimal_pattern_no_prefix = f"Armbian_{community_prefix}[0-9].*{board_pattern}_{ubuntu_codename}_{branch}_[0-9]*.[0-9]*.[0-9]*_minimal{file_ext}"
+            lines.append(ubuntu_minimal_pattern)
+            lines.append(ubuntu_minimal_pattern_no_prefix)
 
     # Display warning for boards with only one image (loongarch only)
     if single_image_boards:
@@ -1884,7 +1908,14 @@ def main():
     # exposed.map
     # Generate from stable + community boards (exclude nightly targets)
     exposed_map_path = output_dir / 'exposed.map'
-    exposed_map = generate_exposed_map(conf_wip_boards_stable, csc_tvb_boards_community)
+    exposed_map = generate_exposed_map(
+        conf_wip_boards_stable,
+        csc_tvb_boards_community,
+        debian_standard=args.debian_standard,
+        ubuntu_standard=args.ubuntu_standard,
+        debian_community=args.debian_community,
+        ubuntu_community=args.ubuntu_community,
+    )
     exposed_map_path.write_text(exposed_map)
     print(f"  Written {exposed_map_path}", file=sys.stderr)
 
