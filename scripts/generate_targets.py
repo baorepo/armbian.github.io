@@ -6,10 +6,62 @@ This script reads image-info.json and generates multiple YAML files for differen
 release types based on board support levels and use cases.
 """
 
+import argparse
 import json
+import re
 import sys
 from collections import defaultdict
 from pathlib import Path
+
+
+# Release-codename substitution tokens. Both the manual override files
+# (release-targets/*.manual) and this generator's own hardcoded YAML
+# stanzas use these symbolic names instead of pinning a specific
+# Debian/Ubuntu codename. A pair of `--debian-<scope>` / `--ubuntu-<scope>`
+# CLI flags per output target decides what gets substituted just before
+# each YAML file is written. Promoting nightly to a new Debian (e.g.
+# moving from forky to whatever the next Debian testing is) becomes a
+# single flag flip, not a 30-place codename rename, and the four output
+# files (standard / nightly / community / apps) can each be on their
+# own (debian, ubuntu) pair — e.g. standard on trixie + noble while
+# nightly is on forky + resolute, which is exactly the current state
+# the defaults below preserve.
+RELEASE_TOKEN_DEBIAN = "DEBIAN"
+RELEASE_TOKEN_UBUNTU = "UBUNTU"
+
+# Per-output-file default codename pairs. Match the literal pins these
+# files used before the substitution refactor — running the generator
+# with no flags reproduces the previous behaviour exactly.
+SCOPE_DEFAULTS = {
+    "standard":  {"debian": "trixie", "ubuntu": "noble"},
+    "nightly":   {"debian": "forky",  "ubuntu": "resolute"},
+    "community": {"debian": "trixie", "ubuntu": "noble"},
+    "apps":      {"debian": "trixie", "ubuntu": "noble"},
+}
+
+
+def resolve_release_tokens(yaml_text: str, debian: str, ubuntu: str) -> str:
+    """
+    Substitute the symbolic RELEASE_TOKEN_* placeholders with real
+    Debian/Ubuntu codenames.
+
+    Only matches `RELEASE: <token>` (with `\\b` word boundary so a
+    token that happens to be a substring of an unrelated string is
+    not touched). Applied to the *fully-assembled* YAML, so it covers
+    both this generator's emit functions and any manual content
+    appended via load_manual_overrides().
+    """
+    yaml_text = re.sub(
+        r"RELEASE:\s*" + re.escape(RELEASE_TOKEN_DEBIAN) + r"\b",
+        f"RELEASE: {debian}",
+        yaml_text,
+    )
+    yaml_text = re.sub(
+        r"RELEASE:\s*" + re.escape(RELEASE_TOKEN_UBUNTU) + r"\b",
+        f"RELEASE: {ubuntu}",
+        yaml_text,
+    )
+    return yaml_text
 
 
 def load_image_info(json_path):
@@ -536,7 +588,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: trixie
+      RELEASE: DEBIAN
       BUILD_MINIMAL: "no"
       BUILD_DESKTOP: "no"
       ENABLE_EXTENSIONS: "ha"
@@ -550,7 +602,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: trixie
+      RELEASE: DEBIAN
       BUILD_MINIMAL: "yes"
       BUILD_DESKTOP: "no"
       ENABLE_EXTENSIONS: "omv"
@@ -564,7 +616,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: trixie
+      RELEASE: DEBIAN
       BUILD_MINIMAL: "no"
       BUILD_DESKTOP: "no"
       ENABLE_EXTENSIONS: "openhab"
@@ -786,7 +838,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: trixie
+      RELEASE: DEBIAN
       BUILD_MINIMAL: "yes"
       BUILD_DESKTOP: "no"
     items:
@@ -840,7 +892,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: noble
+      RELEASE: UBUNTU
       BUILD_MINIMAL: "yes"
       BUILD_DESKTOP: "no"
     items:
@@ -896,7 +948,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: noble
+      RELEASE: UBUNTU
       BUILD_MINIMAL: "no"
       BUILD_DESKTOP: "yes"
       DESKTOP_ENVIRONMENT: "xfce"
@@ -922,7 +974,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: noble
+      RELEASE: UBUNTU
       BUILD_MINIMAL: "no"
       BUILD_DESKTOP: "yes"
       DESKTOP_ENVIRONMENT: "gnome"
@@ -951,7 +1003,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: noble
+      RELEASE: UBUNTU
       BUILD_MINIMAL: "no"
       BUILD_DESKTOP: "yes"
       DESKTOP_ENVIRONMENT: "kde-neon"
@@ -977,7 +1029,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: noble
+      RELEASE: UBUNTU
       BUILD_MINIMAL: "no"
       BUILD_DESKTOP: "yes"
       DESKTOP_ENVIRONMENT: "xfce"
@@ -999,7 +1051,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: noble
+      RELEASE: UBUNTU
       BUILD_MINIMAL: "no"
       BUILD_DESKTOP: "yes"
       DESKTOP_ENVIRONMENT: "xfce"
@@ -1033,7 +1085,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: noble
+      RELEASE: UBUNTU
       BUILD_MINIMAL: "yes"
       BUILD_DESKTOP: "no"
     items:
@@ -1057,7 +1109,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: noble
+      RELEASE: UBUNTU
       BUILD_MINIMAL: "yes"
       BUILD_DESKTOP: "no"
     items:
@@ -1144,7 +1196,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: forky
+      RELEASE: DEBIAN
       BUILD_MINIMAL: "yes"
       BUILD_DESKTOP: "no"
     items:
@@ -1169,7 +1221,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: resolute
+      RELEASE: UBUNTU
       BUILD_MINIMAL: "no"
       BUILD_DESKTOP: "yes"
       DESKTOP_ENVIRONMENT: "gnome"
@@ -1191,7 +1243,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: resolute
+      RELEASE: UBUNTU
       BUILD_MINIMAL: "no"
       BUILD_DESKTOP: "yes"
       DESKTOP_ENVIRONMENT: "xfce"
@@ -1213,7 +1265,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: resolute
+      RELEASE: UBUNTU
       BUILD_MINIMAL: "no"
       BUILD_DESKTOP: "yes"
       DESKTOP_ENVIRONMENT: "xfce"
@@ -1235,7 +1287,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: resolute
+      RELEASE: UBUNTU
       BUILD_MINIMAL: "yes"
       BUILD_DESKTOP: "no"
     items:
@@ -1410,7 +1462,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: trixie
+      RELEASE: DEBIAN
       BUILD_MINIMAL: "yes"
       BUILD_DESKTOP: "no"
     items:
@@ -1455,7 +1507,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: noble
+      RELEASE: UBUNTU
       BUILD_MINIMAL: "no"
       BUILD_DESKTOP: "yes"
       DESKTOP_ENVIRONMENT: "gnome"
@@ -1481,7 +1533,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: noble
+      RELEASE: UBUNTU
       BUILD_MINIMAL: "no"
       BUILD_DESKTOP: "yes"
       DESKTOP_ENVIRONMENT: "kde-neon"
@@ -1507,7 +1559,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: noble
+      RELEASE: UBUNTU
       BUILD_MINIMAL: "no"
       BUILD_DESKTOP: "yes"
       DESKTOP_ENVIRONMENT: "xfce"
@@ -1534,7 +1586,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: noble
+      RELEASE: UBUNTU
       BUILD_MINIMAL: "no"
       BUILD_DESKTOP: "yes"
       DESKTOP_ENVIRONMENT: "xfce"
@@ -1561,7 +1613,7 @@ targets:
       gha: *armbian-gha
     build-image: "yes"
     vars:
-      RELEASE: noble
+      RELEASE: UBUNTU
       BUILD_MINIMAL: "yes"
       BUILD_DESKTOP: "no"
     items:
@@ -1700,22 +1752,58 @@ def generate_exposed_map(conf_wip_boards, csc_tvb_boards=None):
 
 def main():
     """Main entry point."""
-    if len(sys.argv) < 2:
-        print("Usage: generate_targets.py <image-info.json> [output_dir]")
-        print("If output_dir is not specified, uses current directory")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(
+        description=(
+            "Generate Armbian target YAML files. The emitted YAML carries "
+            "symbolic RELEASE tokens (DEBIAN / UBUNTU) that get substituted "
+            "with codenames passed via per-scope flags "
+            f"(--debian-<{'|'.join(SCOPE_DEFAULTS)}> / "
+            f"--ubuntu-<{'|'.join(SCOPE_DEFAULTS)}>) just before each output "
+            "file is written. Defaults preserve the previous literal pins, "
+            "so running with no flags reproduces the old behaviour exactly. "
+            "Promoting a release line is a flag flip, not a multi-place rename."
+        )
+    )
+    parser.add_argument(
+        "json_path",
+        type=Path,
+        help="Path to image-info.json",
+    )
+    parser.add_argument(
+        "output_dir",
+        type=Path,
+        nargs="?",
+        default=Path.cwd(),
+        help="Where to write the generated YAML files (default: cwd)",
+    )
+    # One pair of (--debian-<scope>, --ubuntu-<scope>) flags per output
+    # file, registered in a loop so adding a new scope is a one-line
+    # change to SCOPE_DEFAULTS.
+    for scope, defaults in SCOPE_DEFAULTS.items():
+        parser.add_argument(
+            f"--debian-{scope}",
+            default=defaults["debian"],
+            metavar="CODENAME",
+            dest=f"debian_{scope}",
+            help=f"Debian codename used in the {scope} output file "
+                 f"(default: {defaults['debian']})",
+        )
+        parser.add_argument(
+            f"--ubuntu-{scope}",
+            default=defaults["ubuntu"],
+            metavar="CODENAME",
+            dest=f"ubuntu_{scope}",
+            help=f"Ubuntu codename used in the {scope} output file "
+                 f"(default: {defaults['ubuntu']})",
+        )
+    args = parser.parse_args()
 
-    json_path = Path(sys.argv[1])
+    json_path = args.json_path
+    output_dir = args.output_dir
 
     if not json_path.exists():
         print(f"Error: {json_path} does not exist")
         sys.exit(1)
-
-    # Determine output directory
-    if len(sys.argv) >= 3:
-        output_dir = Path(sys.argv[2])
-    else:
-        output_dir = Path.cwd()
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1760,7 +1848,7 @@ def main():
     conf_wip_boards_apps, _ = extract_boards_by_support_level(image_info, extensions_map, remove_extensions_map, blacklist_apps)
     print(f"  apps: {len(conf_wip_boards_apps)} boards after blacklist", file=sys.stderr)
     apps_yaml = generate_apps_yaml(conf_wip_boards_apps, manual_apps)
-    apps_path.write_text(apps_yaml)
+    apps_path.write_text(resolve_release_tokens(apps_yaml, args.debian_apps, args.ubuntu_apps))
     print(f"  Written {apps_path}", file=sys.stderr)
 
     # targets-release-standard-support.yaml
@@ -1770,7 +1858,7 @@ def main():
     conf_wip_boards_stable, _ = extract_boards_by_support_level(image_info, extensions_map, remove_extensions_map, blacklist_stable)
     print(f"  stable: {len(conf_wip_boards_stable)} boards after blacklist", file=sys.stderr)
     stable_yaml = generate_stable_yaml(conf_wip_boards_stable, manual_stable)
-    stable_path.write_text(stable_yaml)
+    stable_path.write_text(resolve_release_tokens(stable_yaml, args.debian_standard, args.ubuntu_standard))
     print(f"  Written {stable_path}", file=sys.stderr)
 
     # targets-release-nightly.yaml
@@ -1780,7 +1868,7 @@ def main():
     conf_wip_boards_nightly, _ = extract_boards_by_support_level(image_info, extensions_map, remove_extensions_map, blacklist_nightly)
     print(f"  nightly: {len(conf_wip_boards_nightly)} boards after blacklist", file=sys.stderr)
     nightly_yaml = generate_nightly_yaml(conf_wip_boards_nightly, manual_nightly)
-    nightly_path.write_text(nightly_yaml)
+    nightly_path.write_text(resolve_release_tokens(nightly_yaml, args.debian_nightly, args.ubuntu_nightly))
     print(f"  Written {nightly_path}", file=sys.stderr)
 
     # targets-release-community-maintained.yaml
@@ -1790,7 +1878,7 @@ def main():
     _, csc_tvb_boards_community = extract_boards_by_support_level(image_info, extensions_map, remove_extensions_map, blacklist_community)
     print(f"  community: {len(csc_tvb_boards_community)} boards after blacklist", file=sys.stderr)
     community_yaml = generate_community_yaml(csc_tvb_boards_community, manual_community)
-    community_path.write_text(community_yaml)
+    community_path.write_text(resolve_release_tokens(community_yaml, args.debian_community, args.ubuntu_community))
     print(f"  Written {community_path}", file=sys.stderr)
 
     # exposed.map

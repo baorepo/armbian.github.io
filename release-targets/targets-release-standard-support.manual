@@ -9,7 +9,7 @@ minimal-stable-debian-uefi:
     gha: *armbian-gha
   build-image: "yes"
   vars:
-    RELEASE: trixie
+    RELEASE: DEBIAN
     BUILD_MINIMAL: "yes"
     BUILD_DESKTOP: "no"
   items:
@@ -30,7 +30,7 @@ minimal-oldstable-ubuntu-current-uefi:
     gha: *armbian-gha
   build-image: "yes"
   vars:
-    RELEASE: noble
+    RELEASE: UBUNTU
     BUILD_MINIMAL: "yes"
     BUILD_DESKTOP: "no"
   items:
@@ -51,7 +51,7 @@ minimal-stable-ubuntu-uefi:
     gha: *armbian-gha
   build-image: "yes"
   vars:
-    RELEASE: resolute
+    RELEASE: UBUNTU
     BUILD_MINIMAL: "yes"
     BUILD_DESKTOP: "no"
   items:
@@ -70,7 +70,7 @@ desktop-oldstable-ubuntu-gnome-uefi:
     gha: *armbian-gha
   build-image: "yes"
   vars:
-    RELEASE: noble
+    RELEASE: UBUNTU
     BUILD_MINIMAL: "no"
     BUILD_DESKTOP: "yes"
     DESKTOP_ENVIRONMENT: "gnome"
@@ -91,7 +91,7 @@ desktop-stable-ubuntu-gnome-uefi:
     gha: *armbian-gha
   build-image: "yes"
   vars:
-    RELEASE: resolute
+    RELEASE: UBUNTU
     BUILD_MINIMAL: "no"
     BUILD_DESKTOP: "yes"
     DESKTOP_ENVIRONMENT: "gnome"
@@ -109,7 +109,7 @@ desktop-oldstable-ubuntu-cinnamon-uefi:
     gha: *armbian-gha
   build-image: "yes"
   vars:
-    RELEASE: noble
+    RELEASE: UBUNTU
     BUILD_MINIMAL: "no"
     BUILD_DESKTOP: "yes"
     DESKTOP_ENVIRONMENT: "cinnamon"
