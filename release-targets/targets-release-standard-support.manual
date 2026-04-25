@@ -1,7 +1,7 @@
 # Manual target additions for standard support builds
 # This content will be appended to the auto-generated targets-release-standard-support.yaml
 
-# Debian trixie minimal - UEFI only
+# Debian minimal - UEFI only
 minimal-stable-debian-uefi:
   enabled: yes
   configs: [ armbian-images ]
@@ -22,7 +22,7 @@ minimal-stable-debian-uefi:
     - { BOARD: radxa-dragon-q6a, BRANCH: current, ENABLE_EXTENSIONS: "ufs" }
     - { BOARD: radxa-nio-12l, BRANCH: edge, ENABLE_EXTENSIONS: "ufs" }
 
-# Ubuntu noble minimal with current kernel - UEFI only (oldstable)
+# Ubuntu minimal with current kernel - UEFI only (oldstable)
 minimal-oldstable-ubuntu-current-uefi:
   enabled: yes
   configs: [ armbian-images ]
@@ -43,7 +43,7 @@ minimal-oldstable-ubuntu-current-uefi:
     - { BOARD: radxa-dragon-q6a, BRANCH: current, ENABLE_EXTENSIONS: "ufs" }
     - { BOARD: radxa-nio-12l, BRANCH: edge, ENABLE_EXTENSIONS: "ufs" }
 
-# Ubuntu resolute minimal - UEFI only (stable)
+# Ubuntu minimal - UEFI only (stable)
 minimal-stable-ubuntu-uefi:
   enabled: yes
   configs: [ armbian-images ]
@@ -62,7 +62,7 @@ minimal-stable-ubuntu-uefi:
     - { BOARD: uefi-arm64, BRANCH: cloud, ENABLE_EXTENSIONS: "image-output-vhdx" }
     - { BOARD: uefi-x86, BRANCH: cloud, ENABLE_EXTENSIONS: "image-output-vhdx" }
 
-# Ubuntu noble GNOME desktop - UEFI only (oldstable)
+# Ubuntu GNOME desktop - UEFI only (oldstable)
 desktop-oldstable-ubuntu-gnome-uefi:
   enabled: yes
   configs: [ armbian-images ]
@@ -83,7 +83,7 @@ desktop-oldstable-ubuntu-gnome-uefi:
     - { BOARD: radxa-dragon-q6a, BRANCH: current, ENABLE_EXTENSIONS: "ufs" }
     - { BOARD: radxa-nio-12l, BRANCH: edge, ENABLE_EXTENSIONS: "ufs" }
 
-# Ubuntu resolute GNOME desktop - UEFI only (stable)
+# Ubuntu GNOME desktop - UEFI only (stable)
 desktop-stable-ubuntu-gnome-uefi:
   enabled: yes
   configs: [ armbian-images ]
@@ -101,7 +101,7 @@ desktop-stable-ubuntu-gnome-uefi:
     - { BOARD: uefi-arm64, BRANCH: edge, ENABLE_EXTENSIONS: "v4l2loopback-dkms,mesa-vpu" }
     - { BOARD: uefi-x86, BRANCH: edge, ENABLE_EXTENSIONS: "v4l2loopback-dkms,mesa-vpu,nvidia" }
 
-# Ubuntu noble Cinnamon desktop - UEFI only (oldstable)
+# Ubuntu Cinnamon desktop - UEFI only (oldstable)
 desktop-oldstable-ubuntu-cinnamon-uefi:
   enabled: yes
   configs: [ armbian-images ]

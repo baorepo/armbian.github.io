@@ -1188,7 +1188,7 @@ def generate_nightly_yaml(conf_wip_boards, manual_content=""):
     yaml += """# automated lists stop
 
 targets:
-  # Debian forky minimal CLI for all boards
+  # Debian minimal CLI for all boards
   nightly-forky-all:
     enabled: yes
     configs: [ armbian-images ]
@@ -1213,7 +1213,7 @@ targets:
         yaml += '      - *nightly-loongarch\n'
 
     yaml += """
-  # Ubuntu resolute GNOME desktop for fast HDMI boards
+  # Ubuntu GNOME desktop for fast HDMI boards
   nightly-resolute-gnome:
     enabled: yes
     configs: [ armbian-images ]
@@ -1232,10 +1232,10 @@ targets:
       - *nightly-fast-hdmi
 """
 
-    # Ubuntu resolute XFCE desktop for slow HDMI boards
+    # Ubuntu XFCE desktop for slow HDMI boards
     if slow_boards:
         yaml += """
-  # Ubuntu resolute XFCE desktop for slow HDMI boards
+  # Ubuntu XFCE desktop for slow HDMI boards
   nightly-resolute-xfce:
     enabled: yes
     configs: [ armbian-images ]
@@ -1254,10 +1254,10 @@ targets:
       - *nightly-slow-hdmi
 """
 
-    # Ubuntu resolute XFCE desktop for RISC-V boards
+    # Ubuntu XFCE desktop for RISC-V boards
     if riscv64_boards:
         yaml += """
-  # Ubuntu resolute XFCE desktop for RISC-V boards
+  # Ubuntu XFCE desktop for RISC-V boards
   nightly-resolute-riscv64-xfce:
     enabled: yes
     configs: [ armbian-images ]
@@ -1276,10 +1276,10 @@ targets:
       - *nightly-riscv64
 """
 
-    # Ubuntu resolute minimal CLI for headless boards only
+    # Ubuntu minimal CLI for headless boards only
     if headless_boards:
         yaml += """
-  # Ubuntu resolute minimal CLI for headless boards
+  # Ubuntu minimal CLI for headless boards
   nightly-resolute-minimal:
     enabled: yes
     configs: [ armbian-images ]
@@ -1454,7 +1454,7 @@ def generate_community_yaml(csc_tvb_boards, manual_content=""):
     yaml += """# automated lists stop
 
 targets:
-  # Debian trixie minimal CLI for all community boards
+  # Debian minimal CLI for all community boards
   community-trixie-all:
     enabled: yes
     configs: [ armbian-community ]
@@ -1499,7 +1499,7 @@ targets:
         yaml += '      - *community-edge-loongarch\n'
 
     yaml += """
-  # Ubuntu noble GNOME desktop for fast HDMI community boards
+  # Ubuntu GNOME desktop for fast HDMI community boards
   community-noble-gnome:
     enabled: yes
     configs: [ armbian-community ]
@@ -1522,10 +1522,10 @@ targets:
     if edge_fast:
         yaml += '      - *community-edge-fast-hdmi\n'
 
-    # Ubuntu noble KDE Neon desktop for fast HDMI community boards
+    # Ubuntu KDE Neon desktop for fast HDMI community boards
     if current_fast or vendor_fast or edge_fast:
         yaml += """
-  # Ubuntu noble KDE Neon desktop for fast HDMI community boards
+  # Ubuntu KDE Neon desktop for fast HDMI community boards
   community-noble-kde-neon:
     enabled: yes
     configs: [ armbian-community ]
@@ -1548,10 +1548,10 @@ targets:
         if edge_fast:
             yaml += '      - *community-edge-fast-hdmi\n'
 
-    # Ubuntu noble XFCE desktop for slow HDMI community boards
+    # Ubuntu XFCE desktop for slow HDMI community boards
     if current_slow or vendor_slow or edge_slow:
         yaml += """
-  # Ubuntu noble XFCE desktop for slow HDMI community boards
+  # Ubuntu XFCE desktop for slow HDMI community boards
   community-noble-xfce:
     enabled: yes
     configs: [ armbian-community ]
@@ -1575,10 +1575,10 @@ targets:
         if edge_slow:
             yaml += '      - *community-edge-slow-hdmi\n'
 
-    # Ubuntu noble XFCE desktop for RISC-V community boards
+    # Ubuntu XFCE desktop for RISC-V community boards
     if current_riscv64 or vendor_riscv64 or edge_riscv64:
         yaml += """
-  # Ubuntu noble XFCE desktop for RISC-V community boards
+  # Ubuntu XFCE desktop for RISC-V community boards
   community-noble-riscv64-xfce:
     enabled: yes
     configs: [ armbian-community ]
@@ -1602,10 +1602,10 @@ targets:
         if edge_riscv64:
             yaml += '      - *community-edge-riscv64\n'
 
-    # Ubuntu noble minimal CLI for headless community boards
+    # Ubuntu minimal CLI for headless community boards
     if current_headless or vendor_headless or edge_headless:
         yaml += """
-  # Ubuntu noble minimal CLI for headless community boards
+  # Ubuntu minimal CLI for headless community boards
   community-noble-minimal:
     enabled: yes
     configs: [ armbian-community ]
