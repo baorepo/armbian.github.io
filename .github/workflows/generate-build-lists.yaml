@@ -15,7 +15,7 @@ on:
       ubuntu_standard:
         description: "Ubuntu codename for standard-support builds"
         required: false
-        default: "noble"
+        default: "resolute"
       debian_nightly:
         description: "Debian codename for nightly builds"
         required: false
@@ -100,7 +100,7 @@ jobs:
         run: |
           python3 scripts/generate_targets.py image-info.json release-targets \
             --debian-standard  "${{ inputs.debian_standard  || 'trixie'   }}" \
-            --ubuntu-standard  "${{ inputs.ubuntu_standard  || 'noble'    }}" \
+            --ubuntu-standard  "${{ inputs.ubuntu_standard  || 'resolute' }}" \
             --debian-nightly   "${{ inputs.debian_nightly   || 'forky'    }}" \
             --ubuntu-nightly   "${{ inputs.ubuntu_nightly   || 'resolute' }}" \
             --debian-community "${{ inputs.debian_community || 'trixie'   }}" \
