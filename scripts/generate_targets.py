@@ -35,7 +35,7 @@ RELEASE_TOKEN_UBUNTU = "UBUNTU"
 SCOPE_DEFAULTS = {
     "standard":  {"debian": "trixie", "ubuntu": "resolute"},
     "nightly":   {"debian": "forky",  "ubuntu": "resolute"},
-    "community": {"debian": "trixie", "ubuntu": "noble"},
+    "community": {"debian": "trixie", "ubuntu": "resolute"},
     "apps":      {"debian": "trixie", "ubuntu": "noble"},
 }
 

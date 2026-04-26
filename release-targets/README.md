@@ -225,7 +225,7 @@ current directory and should contain `targets-extensions.map` plus any
 | `--debian-nightly`    | `forky`    | `targets-release-nightly.yaml`          |
 | `--ubuntu-nightly`    | `resolute` | `targets-release-nightly.yaml`          |
 | `--debian-community`  | `trixie`   | `targets-release-community-maintained.yaml` |
-| `--ubuntu-community`  | `noble`    | `targets-release-community-maintained.yaml` |
+| `--ubuntu-community`  | `resolute` | `targets-release-community-maintained.yaml` |
 | `--debian-apps`       | `trixie`   | `targets-release-apps.yaml`             |
 | `--ubuntu-apps`       | `noble`    | `targets-release-apps.yaml`             |
 
