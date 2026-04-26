@@ -144,7 +144,7 @@ bananapim5
 Additional YAML that gets appended to the auto-generated targets section:
 
 ```yaml
-# Ubuntu stable minimal cloud
+# Ubuntu minimal cloud
 minimal-cli-stable-ubuntu-cloud:
   enabled: yes
   configs: [ armbian-cloud ]
@@ -152,7 +152,12 @@ minimal-cli-stable-ubuntu-cloud:
     gha: *armbian-gha
   build-image: "yes"
   vars:
-    RELEASE: noble
+    # Symbolic codename token — substituted with the actual codename
+    # by scripts/generate_targets.py (defaults to whatever
+    # --ubuntu-<scope> flag the workflow was dispatched with).
+    # Use literal codenames only when a block must pin to a specific
+    # codename regardless of the per-scope flag.
+    RELEASE: UBUNTU
     BUILD_MINIMAL: "yes"
     BUILD_DESKTOP: "no"
   items:
